@@ -28,7 +28,7 @@ class Clarity:
                 "session_id": session_id
             }
             response_body = self._post("/completions", body)
-            response_body["content"] = response_body["content"][0]
+            response_body["content"] = response_body["content"]
 
             # Add the parsed JSON if requested and possible
             if parse_json:
