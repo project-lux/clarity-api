@@ -28,7 +28,7 @@ class Clarity:
                 "session_id": session_id
             }
             response_body = self._post("/completions", body)
-            response_body["content"] = content_list[0].get("value")
+            response_body["content"] = response_body["content"][0].get("value")
 
             # Add the parsed JSON if requested and possible
             if parse_json:

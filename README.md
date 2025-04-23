@@ -23,7 +23,7 @@ CLARITY_API_KEY=your_clarity_key
 ```python
 import os
 from dotenv import load_dotenv
-from clarity.clarity import Clarity
+from clarity import Clarity
 
 load_dotenv()  # Load environment variables from .env file
 
