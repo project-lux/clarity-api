@@ -1,14 +1,23 @@
 import requests # Or httpx, http.client
 import json # Import the json module
 
+class Session:
+    def __init__(self, session_id):
+        self.session_id = session_id
+
+    def __str__(self):
+        return self.session_id
+
 class Clarity:
     def __init__(self, base_url, instance_id, api_key):
         self.base_url = f"{base_url}/instances/{instance_id}"
+        self.instance_id = instance_id
         self.headers = {
             "Content-Type": "application/json",
             "Accept": "text/plain", # Add others as needed
             "X-AGENT-ACCESS-TOKEN": api_key
         }
+        self.sessions = []
 
     def _post(self, path, json_data):
         url = f"{self.base_url}{path}"
@@ -19,13 +28,15 @@ class Clarity:
 
     def create_session(self, session_name):
         response_body = self._post("/sessions", {"name": session_name})
-        return response_body.get("sessionId")
+        session = Session(response_body.get("sessionId"))
+        self.sessions.append(session)
+        return session
 
-    def complete(self, session_id, prompt, agent_name, parse_json=True):
+    def complete(self, session, prompt, agent_name, parse_json=True):
             body = {
                 "user_prompt": prompt,
                 "agent_name": agent_name,
-                "session_id": session_id
+                "session_id": session.session_id
             }
             response_body = self._post("/completions", body)
 

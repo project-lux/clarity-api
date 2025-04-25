@@ -18,13 +18,20 @@ client = Clarity(base_url=base_url, instance_id=instance_id, api_key=api_key)
 prompt = "I want paintings of professors who discovered fossils"
 
 # Create a session using the client
-session_id = client.create_session("test_session_via_test_py") # Use a distinct name for testing
+session1 = client.create_session("test1") # Use a distinct name for testing
+print("Session ID: ", session1.session_id)
+print(client.sessions)
+
+session2 = client.create_session("test2") # Use a distinct name for testing
+print("Session ID: ", session2.session_id)
+print(client.sessions)
 
 # Get completion using the client
-completion_response = client.complete(session_id, prompt, agent_name, parse_json=True) # Pass agent_name
-
+completion_response = client.complete(session1, prompt, agent_name, parse_json=True)
 # print("\nCompletion JSON:")
 print(completion_response["json"])
 
-print("\nContent:")
-print(completion_response["content"])
+
+
+# print("\nContent:")
+# print(completion_response["content"])
