@@ -43,7 +43,6 @@ class Clarity:
             # Add the parsed JSON if requested and possible
             if parse_json:
                 content_list = response_body.get("content")
-    
                 response_body["json"] = self.get_json(content_list[0].get("value"))
             
             return response_body
@@ -56,7 +55,9 @@ class Clarity:
             # Look for JSON markdown format in content_value
             if "```json" in input_string:
                 start = input_string.find("```json") + 7
-            end = input_string.find("```", start)
+                end = input_string.find("```", start)
+            else:
+                end = -1
             if end != -1:
                 json_string = input_string[start:end].strip()
                 try:
@@ -68,6 +69,6 @@ class Clarity:
             else:
                 print("None. Here's the string:")
                 print(input_string)
- 
-    
+                return None
+
     
