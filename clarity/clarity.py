@@ -4,20 +4,26 @@ import json # Import the json module
 class Session:
     def __init__(self, session_id):
         self.session_id = session_id
+        self.history = []
 
     def __str__(self):
         return self.session_id
 
+    def add_history(self, entry):
+        self.history.append(entry)
+
+
 class Clarity:
-    def __init__(self, base_url, instance_id, api_key):
+    def __init__(self, base_url, instance_id, api_key, agent_name):
         self.base_url = f"{base_url}/instances/{instance_id}"
         self.instance_id = instance_id
+        self.agent_name = agent_name
         self.headers = {
             "Content-Type": "application/json",
             "Accept": "text/plain", # Add others as needed
             "X-AGENT-ACCESS-TOKEN": api_key
         }
-        self.sessions = []
+        self.sessions = {}
 
     def _post(self, path, json_data):
         url = f"{self.base_url}{path}"
@@ -29,22 +35,24 @@ class Clarity:
     def create_session(self, session_name):
         response_body = self._post("/sessions", {"name": session_name})
         session = Session(response_body.get("sessionId"))
-        self.sessions.append(session)
+        self.sessions[session_name] = session
         return session
 
-    def complete(self, session, prompt, agent_name, parse_json=True):
+    def complete(self, prompt, session=None, parse_json=True):
+            if session is None:
+                session = list(self.sessions.values())[0]
             body = {
                 "user_prompt": prompt,
-                "agent_name": agent_name,
+                "agent_name": self.agent_name,
                 "session_id": session.session_id
             }
             response_body = self._post("/completions", body)
+            session.add_history({"prompt": prompt, "response": response_body})
 
             # Add the parsed JSON if requested and possible
             if parse_json:
                 content_list = response_body.get("content")
                 response_body["json"] = self.get_json(content_list[0].get("value"))
-            
             return response_body
 
     def get_json(self, input_string):
@@ -70,5 +78,3 @@ class Clarity:
                 print("None. Here's the string:")
                 print(input_string)
                 return None
-
-    
